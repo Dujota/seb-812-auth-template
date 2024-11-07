@@ -19,7 +19,9 @@ app.use(methodOverride('_method'));
 app.use(morgan('dev'));
 
 // Public Routes
-
+app.get('/', (req, res) => {
+  res.render('index.ejs');
+});
 // Protected Routes
 
 app.listen(port, () => {
