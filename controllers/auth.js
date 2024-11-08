@@ -31,4 +31,42 @@ router.post('/sign-up', async (req, res) => {
   res.send(`Thanks for signing up ${user.username}`);
 });
 
+router.get('/sign-in', (req, res) => {
+  res.render('auth/sign-in.ejs');
+});
+
+router.post('/sign-in', async (req, res) => {
+  // first lets check if the user exists in the database
+  const userInDatabase = await User.findOne({ username: req.body.username });
+
+  // tell FE that an error has occured if the user exists in db
+  if (!userInDatabase) {
+    // else let FE know sign in failed
+    return res.send('Username or Password is invalid');
+  }
+
+  // if the user exists, then we want to vertify  if the password matches
+  const validPassword = bcrypt.compareSync(req.body.password, userInDatabase.password);
+
+  if (!validPassword) {
+    return res.send('Login failed. Please try again.');
+  }
+
+  // when the password matches, "sign them in"
+  // save their username in teh session
+  req.session.user = {
+    username: userInDatabase.username,
+    _id: userInDatabase._id,
+    // isAdmin: userInDatabase.isAdmin
+  };
+  // send them to the homepage
+  res.redirect('/');
+});
+
+router.get('/sign-out', (req, res) => {
+  // destroy or delete the session using the built in session.destroy method
+  req.session.destroy();
+  res.redirect('/');
+});
+
 module.exports = router;
