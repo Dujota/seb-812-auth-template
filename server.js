@@ -6,6 +6,9 @@ const app = express();
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 
+// Controllers
+const authCtrl = require('./controllers/auth');
+
 // Set the port from environment variable or default to 3000
 const port = process.env.PORT ? process.env.PORT : '3000';
 
@@ -22,6 +25,9 @@ app.use(morgan('dev'));
 app.get('/', (req, res) => {
   res.render('index.ejs');
 });
+
+app.use('/auth', authCtrl);
+
 // Protected Routes
 
 app.listen(port, () => {
